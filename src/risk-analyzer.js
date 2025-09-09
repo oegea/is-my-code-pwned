@@ -104,7 +104,7 @@ class RiskAnalyzer {
       if (this.allowsAutomaticUpdates(version)) {
         risks.push({
           type: 'automatic-updates-allowed',
-          severity: 'medium',
+          severity: 'high',
           message: `${packageName} uses range "${version}" allowing automatic updates`,
           package: packageName,
           version: version,
