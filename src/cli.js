@@ -8,7 +8,7 @@ class CLIHandler {
 
   printBanner() {
     console.log('');
-    console.log('🔍 is-my-code-pwned v2.1.0');
+    console.log('🔍 is-my-code-pwned v2.1.1');
     console.log('   🛡️  Advanced Security Scanner for npm Packages');
     console.log('   🔎 Comprehensive malware detection & vulnerability analysis');
     console.log('');
