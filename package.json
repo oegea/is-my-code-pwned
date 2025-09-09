@@ -1,6 +1,6 @@
 {
   "name": "is-my-code-pwned",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Advanced security scanner for detecting malicious npm packages and analyzing vulnerability risks in Node.js projects",
   "main": "index.js",
   "bin": {
