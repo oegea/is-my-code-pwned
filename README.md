@@ -4,6 +4,8 @@
 
 Comprehensive tool that detects malicious npm packages and analyzes security vulnerabilities in your projects. Designed to give you complete confidence that your code is clean.
 
+> ⚠️ **DISCLAIMER**: This tool was developed with Claude Code AI assistance. **Use with caution** in production environments. The tool is designed to be **read-only** and will not modify your files or projects - it only analyzes and reports security findings. Always review the source code before use.
+
 ## 🚀 Installation
 
 ### Global installation (recommended for CLI usage)

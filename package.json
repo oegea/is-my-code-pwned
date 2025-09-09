@@ -1,6 +1,6 @@
 {
   "name": "is-my-code-pwned",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Advanced security scanner for detecting malicious npm packages and analyzing vulnerability risks in Node.js projects",
   "main": "index.js",
   "bin": {
@@ -40,7 +40,7 @@
     "type": "git",
     "url": "git+https://github.com/oegea/is-my-code-pwned.git"
   },
-  "author": "",
+  "author": "Oriol Egea",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/oegea/is-my-code-pwned/issues"
