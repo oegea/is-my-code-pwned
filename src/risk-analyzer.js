@@ -100,22 +100,140 @@ class RiskAnalyzer {
         });
       }
       
+      // Verificar uso de carets y tildes que permiten actualizaciones automáticas
+      if (this.allowsAutomaticUpdates(version)) {
+        risks.push({
+          type: 'automatic-updates-allowed',
+          severity: 'medium',
+          message: `${packageName} uses range "${version}" allowing automatic updates`,
+          package: packageName,
+          version: version,
+          dependencyType: depType,
+          recommendation: 'Consider pinning to exact version to prevent supply chain attacks: "' + packageName + '": "' + version.replace(/^[\^~]/, '') + '"'
+        });
+      }
+      
       // Verificar protocolos de fuente sospechosos
       this.checkSuspiciousSourceProtocol(packageName, version, depType, risks);
     }
   }
 
   versionRangeCouldInclude(range, targetVersion) {
-    // Rangos que podrían incluir versiones peligrosas
-    return range.includes('^') || 
-           range.includes('~') || 
-           range === '*' || 
-           range.includes('x') ||
-           range.includes('latest') ||
-           range.includes('>') ||
-           range.includes('<') ||
-           range.includes('>=') ||
-           range.includes('<=');
+    // Si no es un rango, verificar coincidencia exacta
+    if (!this.isVersionRange(range)) {
+      return range === targetVersion;
+    }
+
+    // Verificar si el rango específico podría incluir la versión objetivo
+    return this.rangeIncludesVersion(range, targetVersion);
+  }
+
+  isVersionRange(version) {
+    return version.includes('^') || 
+           version.includes('~') || 
+           version === '*' || 
+           version.includes('x') ||
+           version.includes('latest') ||
+           version.includes('>') ||
+           version.includes('<') ||
+           version.includes('>=') ||
+           version.includes('<=') ||
+           version.includes('||');
+  }
+
+  rangeIncludesVersion(range, targetVersion) {
+    try {
+      // Manejar casos específicos de rangos comunes
+      if (range === '*' || range === 'latest') {
+        return true; // Incluye cualquier versión
+      }
+
+      // Parsear versión objetivo
+      const target = this.parseVersion(targetVersion);
+      if (!target) return true; // Si no se puede parsear, asumir riesgo
+
+      // Manejar caret (^1.2.3 permite 1.x.x pero no 2.x.x)
+      if (range.startsWith('^')) {
+        const baseVersion = range.substring(1);
+        const base = this.parseVersion(baseVersion);
+        if (!base) return true; // Si no se puede parsear, asumir riesgo
+        
+        // Caret permite cambios compatibles: mismo major version
+        return target.major === base.major && 
+               (target.major > 0 ? 
+                 (target.minor > base.minor || 
+                  (target.minor === base.minor && target.patch >= base.patch)) :
+                 // Para 0.x.x, caret es más restrictivo
+                 (base.minor === 0 ? 
+                   (target.minor === base.minor && target.patch >= base.patch) :
+                   (target.minor === base.minor && target.patch >= base.patch)));
+      }
+
+      // Manejar tilde (~1.2.3 permite 1.2.x pero no 1.3.x)
+      if (range.startsWith('~')) {
+        const baseVersion = range.substring(1);
+        const base = this.parseVersion(baseVersion);
+        if (!base) return true; // Si no se puede parsear, asumir riesgo
+        
+        // Tilde permite cambios de patch: mismo major.minor
+        return target.major === base.major && 
+               target.minor === base.minor && 
+               target.patch >= base.patch;
+      }
+
+      // Manejar rangos con operadores
+      if (range.includes('>=') || range.includes('<=') || 
+          range.includes('>') || range.includes('<')) {
+        // Para rangos complejos, asumir que podría incluir la versión
+        return true;
+      }
+
+      // Manejar rangos con x (1.2.x, 1.x.x)
+      if (range.includes('x') || range.includes('X')) {
+        const parts = range.split('.');
+        const targetParts = targetVersion.split('.');
+        
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i] === 'x' || parts[i] === 'X') {
+            continue; // x coincide con cualquier valor
+          }
+          if (parts[i] !== targetParts[i]) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      // Si llegamos aquí y sigue siendo un rango, asumir riesgo
+      return this.isVersionRange(range);
+      
+    } catch (error) {
+      // En caso de error, asumir que el rango podría incluir la versión
+      return true;
+    }
+  }
+
+  parseVersion(version) {
+    try {
+      // Limpiar prefijos y sufijos comunes
+      const cleaned = version.replace(/^[v=]/, '').split('-')[0].split('+')[0];
+      const parts = cleaned.split('.');
+      
+      if (parts.length < 3) {
+        // Añadir partes faltantes como 0
+        while (parts.length < 3) {
+          parts.push('0');
+        }
+      }
+
+      return {
+        major: parseInt(parts[0]) || 0,
+        minor: parseInt(parts[1]) || 0,
+        patch: parseInt(parts[2]) || 0
+      };
+    } catch (error) {
+      return null;
+    }
   }
 
   isVeryLooseRange(version) {
@@ -125,6 +243,11 @@ class RiskAnalyzer {
            version === '>0.0.0' ||
            /^\^0\./.test(version) || // ^0.x es muy peligroso
            /^~0\./.test(version);    // ~0.x también
+  }
+
+  allowsAutomaticUpdates(version) {
+    // Detectar carets (^) y tildes (~) que permiten actualizaciones automáticas
+    return version.startsWith('^') || version.startsWith('~');
   }
 
   checkSuspiciousSourceProtocol(packageName, version, depType, risks) {
