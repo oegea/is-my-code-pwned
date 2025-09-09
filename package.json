@@ -1,0 +1,49 @@
+{
+  "name": "is-my-code-pwned",
+  "version": "2.0.0",
+  "description": "Advanced security scanner for detecting malicious npm packages and analyzing vulnerability risks in Node.js projects",
+  "main": "index.js",
+  "bin": {
+    "is-my-code-pwned": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "scan": "node index.js",
+    "scan:deep": "node index.js --deep-scan",
+    "scan:config": "node index.js --config-only",
+    "test": "node index.js --help"
+  },
+  "files": [
+    "src/",
+    "malicious-packages.json",
+    "index.js",
+    "CLAUDE.md",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "preferGlobal": true,
+  "keywords": [
+    "security",
+    "malware",
+    "npm",
+    "vulnerability",
+    "scanner",
+    "supply-chain",
+    "malicious-packages",
+    "cli",
+    "security-audit",
+    "package-security"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oegea/is-my-code-pwned.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oegea/is-my-code-pwned/issues"
+  },
+  "homepage": "https://github.com/oegea/is-my-code-pwned#readme"
+}
