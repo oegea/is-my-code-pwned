@@ -4,6 +4,16 @@
 
 Comprehensive tool that detects malicious npm packages and analyzes security vulnerabilities in your projects. Designed to give you complete confidence that your code is clean.
 
+## 🚨 Background
+
+This tool was created in direct response to the **September 8, 2025 npm supply chain attack** where [18 popular npm packages were compromised](https://www.aikido.dev/blog/npm-debug-and-chalk-packages-compromised), affecting over **2 billion weekly downloads**. 
+
+The attack targeted packages like `chalk`, `debug`, `ansi-styles`, and `supports-color` through a phishing campaign, injecting malware that hijacks cryptocurrency transactions and wallet APIs. This incident highlighted the critical need for tools that can quickly identify compromised packages in your projects.
+
+**is-my-code-pwned** helps you detect these exact packages and many others that could compromise your applications.
+
+📖 **Read more about the attack:** https://www.aikido.dev/blog/npm-debug-and-chalk-packages-compromised
+
 > ⚠️ **DISCLAIMER**: This tool was developed with Claude Code AI assistance. **Use with caution** in production environments. The tool is designed to be **read-only** and will not modify your files or projects - it only analyzes and reports security findings. Always review the source code before use.
 
 ## 🚀 Installation
